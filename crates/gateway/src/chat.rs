@@ -105,6 +105,11 @@ impl ChatService for LiveChatService {
                     .collect();
                 format!("model '{}' not found. available: {:?}", id, available)
             })?
+        } else if !stream_only {
+            // Prefer a tool-capable provider when we have tools registered.
+            self.providers
+                .first_with_tools()
+                .ok_or_else(|| "no LLM providers configured".to_string())?
         } else {
             self.providers
                 .first()
@@ -116,6 +121,16 @@ impl ChatService for LiveChatService {
         let active_runs = Arc::clone(&self.active_runs);
         let run_id_clone = run_id.clone();
         let tool_registry = Arc::clone(&self.tool_registry);
+
+        // Warn if tool mode is active but the provider doesn't support tools.
+        if !stream_only && !provider.supports_tools() {
+            warn!(
+                provider = provider.name(),
+                model = provider.id(),
+                "selected provider does not support tool calling; \
+                 LLM will not be able to use tools"
+            );
+        }
 
         let handle = tokio::spawn(async move {
             if stream_only {

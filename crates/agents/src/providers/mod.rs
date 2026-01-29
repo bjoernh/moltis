@@ -331,6 +331,17 @@ impl ProviderRegistry {
             .cloned()
     }
 
+    /// Return the first provider that supports tool calling,
+    /// falling back to the first provider overall.
+    pub fn first_with_tools(&self) -> Option<Arc<dyn LlmProvider>> {
+        self.models
+            .iter()
+            .filter_map(|m| self.providers.get(&m.id))
+            .find(|p| p.supports_tools())
+            .cloned()
+            .or_else(|| self.first())
+    }
+
     pub fn list_models(&self) -> &[ModelInfo] {
         &self.models
     }

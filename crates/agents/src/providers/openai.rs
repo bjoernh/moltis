@@ -72,6 +72,10 @@ impl LlmProvider for OpenAiProvider {
         &self.model
     }
 
+    fn supports_tools(&self) -> bool {
+        true
+    }
+
     async fn complete(
         &self,
         messages: &[serde_json::Value],
