@@ -1,5 +1,4 @@
-use std::fmt::Write;
-use std::sync::Arc;
+use std::{fmt::Write, sync::Arc};
 
 use {
     anyhow::Result,
@@ -185,7 +184,7 @@ fn strip_base64_blobs(input: &str) -> String {
 
             if payload_len >= BLOB_MIN_LEN {
                 let total_uri_len = BASE64_TAG.len() + payload_start + payload_len;
-                write!(result,"[base64 data removed — {total_uri_len} bytes]").unwrap();
+                write!(result, "[base64 data removed — {total_uri_len} bytes]").unwrap();
                 rest = &rest[start + total_uri_len..];
                 continue;
             }
@@ -212,7 +211,7 @@ fn strip_hex_blobs(input: &str) -> String {
             }
             let run = i - start;
             if run >= BLOB_MIN_LEN {
-                write!(result,"[hex data removed — {run} chars]").unwrap();
+                write!(result, "[hex data removed — {run} chars]").unwrap();
             } else {
                 result.push_str(&input[start..i]);
             }
@@ -288,7 +287,9 @@ pub async fn run_agent_loop_with_context(
 ) -> Result<AgentRunResult, AgentRunError> {
     let native_tools = provider.supports_tools();
     let tool_schemas = tools.list_schemas();
-    let max_tool_result_bytes = moltis_config::discover_and_load().tools.max_tool_result_bytes;
+    let max_tool_result_bytes = moltis_config::discover_and_load()
+        .tools
+        .max_tool_result_bytes;
 
     info!(
         provider = provider.name(),
@@ -680,10 +681,7 @@ pub async fn run_agent_loop_with_context(
                 result
             };
 
-            let tool_result_str = sanitize_tool_result(
-                &result.to_string(),
-                max_tool_result_bytes,
-            );
+            let tool_result_str = sanitize_tool_result(&result.to_string(), max_tool_result_bytes);
             debug!(
                 tool = %tc.name,
                 id = %tc.id,
