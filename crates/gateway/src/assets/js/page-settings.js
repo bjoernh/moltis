@@ -1195,12 +1195,10 @@ function TailscaleSection() {
 		}
 		container.appendChild(section);
 		var warn = cloneHidden("ts-funnel-security-warning");
-		if (warn) {
-			if (!authReady) {
-				var authSpan = warn.querySelector("[data-ts-auth-required]");
-				if (authSpan) authSpan.style.display = "";
-			}
-			container.appendChild(warn);
+		if (warn) container.appendChild(warn);
+		if (!authReady) {
+			var authBtn = cloneHidden("ts-funnel-auth-btn");
+			if (authBtn) container.appendChild(authBtn);
 		}
 		return currentMode;
 	}
